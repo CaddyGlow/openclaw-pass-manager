@@ -1,6 +1,6 @@
 {
   "name": "openclaw-pass-manager",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "description": "OpenClaw plugin for the standard Unix password manager (pass). Provides agent tools to list, get, save, search passwords and generate OTP codes.",
   "repository": {
