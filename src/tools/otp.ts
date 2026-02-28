@@ -1,4 +1,4 @@
-import { run, ok, err, resolveOrExplain } from "../pass.js";
+import { run, ok, err, resolveOrExplain, type Tool } from "../pass.js";
 
 export const passOtp = {
   name: "pass_otp",
@@ -24,21 +24,22 @@ export const passOtp = {
     _id: string,
     params: { name: string; append_uri?: string },
   ) {
-    const result = resolveOrExplain(params.name);
+    const result = await resolveOrExplain(params.name);
     if ("error" in result) return result.error;
 
     try {
       if (params.append_uri) {
-        const escaped = params.append_uri.replace(/'/g, "'\\''");
-        const out = run(
-          `printf '%s\\n' '${escaped}' | pass otp append "${result.path}"`,
+        const out = await run(
+          "pass",
+          ["otp", "append", result.path],
+          { input: params.append_uri },
         );
         return ok(out || `OTP URI appended to ${result.path}`);
       }
-      const code = run(`pass otp "${result.path}"`);
+      const code = await run("pass", ["otp", result.path]);
       return ok(`OTP code: ${code}`);
     } catch (e) {
       return err(e);
     }
   },
-};
+} satisfies Tool;

@@ -1,6 +1,7 @@
 {
   "name": "openclaw-pass-manager",
   "version": "1.0.0",
+  "type": "module",
   "description": "OpenClaw plugin for the standard Unix password manager (pass). Provides agent tools to list, get, save, search passwords and generate OTP codes.",
   "license": "MIT",
   "keywords": [
@@ -13,6 +14,12 @@
     "totp",
     "gpg"
   ],
+  "files": [
+    "src/",
+    "!src/**/*.test.ts",
+    "openclaw.plugin.json",
+    "LICENSE"
+  ],
   "openclaw": {
     "extensions": [
       "./src/index.ts"
@@ -21,19 +28,22 @@
       "npmSpec": "openclaw-pass-manager"
     }
   },
-  "files": [
-    "src/",
-    "openclaw.plugin.json",
-    "LICENSE"
-  ],
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "tsc --noEmit"
+  "peerDependencies": {
+    "openclaw": ">=2025.0.0"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
   }
 }

@@ -1,4 +1,4 @@
-import { run, ok, err } from "../pass.js";
+import { run, ok, err, type Tool } from "../pass.js";
 
 export const passSave = {
   name: "pass_save",
@@ -46,13 +46,14 @@ export const passSave = {
     },
   ) {
     try {
-      const forceFlag = params.force ? " -f" : "";
-
       if (params.generate) {
         const len = params.length ?? 25;
-        const out = run(
-          `pass generate${forceFlag} "${params.name}" ${len}`,
-        );
+        const out = await run("pass", [
+          "generate",
+          ...(params.force ? ["-f"] : []),
+          params.name,
+          String(len),
+        ]);
         return ok(out);
       }
 
@@ -60,13 +61,14 @@ export const passSave = {
         return ok("Error: provide 'body' or set 'generate' to true.");
       }
 
-      const escaped = params.body.replace(/'/g, "'\\''");
-      const out = run(
-        `printf '%s\\n' '${escaped}' | pass insert${forceFlag} -m "${params.name}"`,
+      const out = await run(
+        "pass",
+        ["insert", ...(params.force ? ["-f"] : []), "-m", params.name],
+        { input: params.body },
       );
       return ok(out || `Saved entry: ${params.name}`);
     } catch (e) {
       return err(e);
     }
   },
-};
+} satisfies Tool;

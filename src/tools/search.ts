@@ -1,4 +1,4 @@
-import { run, ok, err } from "../pass.js";
+import { run, ok, err, type Tool } from "../pass.js";
 
 export const passSearch = {
   name: "pass_search",
@@ -24,11 +24,11 @@ export const passSearch = {
     params: { query: string; names_only?: boolean },
   ) {
     try {
-      const cmd =
+      const [cmd, ...args] =
         params.names_only !== false
-          ? `pass find "${params.query}"`
-          : `pass grep "${params.query}"`;
-      const out = run(cmd);
+          ? ["pass", "find", params.query]
+          : ["pass", "grep", params.query];
+      const out = await run(cmd, args);
       return ok(out || "No matches found.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -38,4 +38,4 @@ export const passSearch = {
       return err(e);
     }
   },
-};
+} satisfies Tool;

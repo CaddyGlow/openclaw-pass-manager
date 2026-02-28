@@ -1,4 +1,4 @@
-import { run, ok, err, resolveOrExplain } from "../pass.js";
+import { run, ok, err, resolveOrExplain, type Tool } from "../pass.js";
 
 export const passGet = {
   name: "pass_get",
@@ -21,20 +21,20 @@ export const passGet = {
     required: ["name"],
   },
   async execute(_id: string, params: { name: string; line?: number }) {
-    const result = resolveOrExplain(params.name);
+    const result = await resolveOrExplain(params.name);
     if ("error" in result) return result.error;
 
     try {
-      const cmd =
+      const out = await run("pass", ["show", result.path]);
+      const text =
         params.line != null
-          ? `pass show "${result.path}" | sed -n '${params.line}p'`
-          : `pass show "${result.path}"`;
-      const out = run(cmd);
+          ? (out.split("\n")[params.line - 1] ?? "")
+          : out;
       const prefix =
         result.path !== params.name ? `[resolved: ${result.path}]\n` : "";
-      return ok(`${prefix}${out}`);
+      return ok(`${prefix}${text}`);
     } catch (e) {
       return err(e);
     }
   },
-};
+} satisfies Tool;
