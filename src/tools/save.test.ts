@@ -81,4 +81,38 @@ describe("pass_save", () => {
     });
     expect(res.content[0].text).toContain("Error: gpg failed");
   });
+
+  it("rejects path traversal in name", async () => {
+    mockRun.mockClear();
+    const res = await passSave.execute("1", {
+      name: "../../evil",
+      body: "hack",
+    });
+    expect(res.content[0].text).toContain("Error:");
+    expect(mockRun).not.toHaveBeenCalled();
+  });
+
+  it("rejects body exceeding max length", async () => {
+    mockRun.mockClear();
+    const res = await passSave.execute("1", {
+      name: "x",
+      body: "x".repeat(70_000),
+    });
+    expect(res.content[0].text).toContain("too long");
+    expect(mockRun).not.toHaveBeenCalled();
+  });
+
+  it("clamps generated password length to safe bounds", async () => {
+    mockRun.mockResolvedValue("ok");
+    await passSave.execute("1", {
+      name: "x",
+      generate: true,
+      length: 999_999,
+    });
+    expect(mockRun).toHaveBeenCalledWith("pass", [
+      "generate",
+      "x",
+      "1024",
+    ]);
+  });
 });

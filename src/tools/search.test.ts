@@ -50,4 +50,11 @@ describe("pass_search", () => {
     const res = await passSearch.execute("1", { query: "test" });
     expect(res.content[0].text).toContain("Error: gpg agent timeout");
   });
+
+  it("rejects query exceeding max length", async () => {
+    mockRun.mockClear();
+    const res = await passSearch.execute("1", { query: "a".repeat(300) });
+    expect(res.content[0].text).toContain("too long");
+    expect(mockRun).not.toHaveBeenCalled();
+  });
 });

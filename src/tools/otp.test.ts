@@ -53,4 +53,15 @@ describe("pass_otp", () => {
     const res = await passOtp.execute("1", { name: "gmail" });
     expect(res.content[0].text).toContain("Error: pass-otp not installed");
   });
+
+  it("rejects append_uri exceeding max length", async () => {
+    mockRun.mockClear();
+    mockResolve.mockResolvedValue({ path: "Email/gmail" });
+    const res = await passOtp.execute("1", {
+      name: "gmail",
+      append_uri: "x".repeat(70_000),
+    });
+    expect(res.content[0].text).toContain("too long");
+    expect(mockRun).not.toHaveBeenCalled();
+  });
 });

@@ -1,4 +1,4 @@
-import { run, ok, err, resolveOrExplain, type Tool } from "../pass.js";
+import { run, ok, err, resolveOrExplain, MAX_BODY_LENGTH, type Tool } from "../pass.js";
 
 export const passOtp = {
   name: "pass_otp",
@@ -29,6 +29,9 @@ export const passOtp = {
 
     try {
       if (params.append_uri) {
+        if (params.append_uri.length > MAX_BODY_LENGTH) {
+          return ok("Error: OTP URI is too long.");
+        }
         const out = await run(
           "pass",
           ["otp", "append", result.path],

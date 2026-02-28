@@ -1,4 +1,4 @@
-import { run, ok, err, type Tool } from "../pass.js";
+import { run, ok, err, validateName, type Tool } from "../pass.js";
 
 export const passList = {
   name: "pass_list",
@@ -17,6 +17,7 @@ export const passList = {
   async execute(_id: string, params: { subfolder?: string }) {
     try {
       const target = params.subfolder ?? "";
+      if (target) validateName(target);
       const out = await run("pass", ["ls", ...(target ? [target] : [])]);
       return ok(out || "(empty store)");
     } catch (e) {

@@ -35,4 +35,11 @@ describe("pass_list", () => {
     const res = await passList.execute("1", {});
     expect(res.content[0].text).toContain("Error: pass not found");
   });
+
+  it("rejects path traversal in subfolder", async () => {
+    mockRun.mockClear();
+    const res = await passList.execute("1", { subfolder: "../../etc" });
+    expect(res.content[0].text).toContain("Error:");
+    expect(mockRun).not.toHaveBeenCalled();
+  });
 });

@@ -1,4 +1,4 @@
-import { run, ok, err, type Tool } from "../pass.js";
+import { run, ok, err, validateName, MAX_BODY_LENGTH, type Tool } from "../pass.js";
 
 export const passSave = {
   name: "pass_save",
@@ -46,8 +46,13 @@ export const passSave = {
     },
   ) {
     try {
+      validateName(params.name);
+      if (params.body && params.body.length > MAX_BODY_LENGTH) {
+        return ok("Error: entry body is too long (max 64 KB).");
+      }
+
       if (params.generate) {
-        const len = params.length ?? 25;
+        const len = Math.min(Math.max(params.length ?? 25, 1), 1024);
         const out = await run("pass", [
           "generate",
           ...(params.force ? ["-f"] : []),

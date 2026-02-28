@@ -1,4 +1,4 @@
-import { run, ok, err, type Tool } from "../pass.js";
+import { run, ok, err, MAX_QUERY_LENGTH, type Tool } from "../pass.js";
 
 export const passSearch = {
   name: "pass_search",
@@ -24,6 +24,10 @@ export const passSearch = {
     params: { query: string; names_only?: boolean },
   ) {
     try {
+      if (params.query.length > MAX_QUERY_LENGTH) {
+        return ok("Error: query is too long.");
+      }
+
       const [cmd, ...args] =
         params.names_only !== false
           ? ["pass", "find", params.query]
