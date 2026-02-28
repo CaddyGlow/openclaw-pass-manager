@@ -6,7 +6,7 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -40,6 +40,18 @@ jobs:
 
       - name: Run type check
         run: npm run lint
+
+      - name: Build npm package tarball
+        id: pack
+        run: |
+          PACKAGE_FILE="$(npm pack --json | node -e "const fs = require('fs'); const out = JSON.parse(fs.readFileSync(0, 'utf8')); process.stdout.write(out[0].filename)")"
+          echo "package_file=$PACKAGE_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release and upload package
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: ${{ steps.pack.outputs.package_file }}
 
       - name: Publish package
         run: npm publish --access public
