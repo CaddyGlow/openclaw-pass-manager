@@ -1,0 +1,18 @@
+{
+  "id": "pass-manager",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "storePath": {
+        "type": "string",
+        "description": "Custom path to the password store. Defaults to ~/.password-store or $PASSWORD_STORE_DIR."
+      }
+    }
+  },
+  "uiHints": {
+    "storePath": {
+      "label": "Password Store Path",
+      "placeholder": "~/.password-store"
+    }
+  }
+}
