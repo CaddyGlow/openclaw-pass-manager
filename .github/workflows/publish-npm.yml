@@ -12,6 +12,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,6 +58,13 @@ jobs:
         with:
           generate_release_notes: true
           files: ${{ steps.pack.outputs.package_file }}
+
+      - name: Verify OIDC token is available
+        run: |
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "ACTIONS_ID_TOKEN_REQUEST_URL is missing. id-token: write permission is required."
+            exit 1
+          fi
 
       - name: Publish package
         run: npm publish --provenance --access public
